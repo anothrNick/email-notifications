@@ -1,0 +1,7 @@
+{
+    "TemplateMap": {
+        "default": "./templates/default.html"
+    },
+	"SenderName": "Company",
+	"SenderEmail": "test@company.test"
+}
