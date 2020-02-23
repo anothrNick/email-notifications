@@ -2,6 +2,8 @@
 
 Reads email notifications from a Redis queue and sends them via SendGrid API.
 
+[![Stable Version](https://img.shields.io/github/v/tag/anothrNick/email-notifications)](https://img.shields.io/github/v/tag/anothrNick/email-notifications)
+
 ### Environment
 
 Set local environment variables
