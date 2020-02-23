@@ -22,6 +22,36 @@ Reads a JSON Config file. Set the `EMAIL_CONFIG_PATH` environment variable with 
 |SenderName|The name of the email sender|
 |SenderEmail|The email of the sender|
 
-### TODO
+### Run Locally
 
-* Read notifications from redis
+Make commands:
+
+```sh
+# build without cache
+rebuild:
+	docker-compose build --no-cache
+
+# build image
+build:
+	docker-compose build
+
+# spin up containers (postgres and api)
+up:
+	docker-compose up -d
+
+# bring down running containers
+down:
+	docker-compose down
+
+# stop running containers
+stop:
+	docker-compose stop
+
+# remove containers and images
+remove:
+	docker-compose rm -f
+
+# cleanup images and volumes
+clean:
+	docker-compose down --rmi all -v --remove-orphans
+```

@@ -2,27 +2,28 @@ package email
 
 import (
 	"bytes"
-	"fmt"
 	"html/template"
-	"log"
 	"os"
 
 	"github.com/anothrNick/email-notifications/config"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
+	"github.com/sirupsen/logrus"
 )
 
 // Client wraps the email configuration and sending
 type Client struct {
 	config *config.App
 	client *sendgrid.Client
+	logger *logrus.Logger
 }
 
 // NewClient returns a `Client` with the default `SendEmail` func
-func NewClient(config *config.App) *Client {
+func NewClient(config *config.App, logger *logrus.Logger) *Client {
 	return &Client{
 		config: config,
 		client: sendgrid.NewSendClient(os.Getenv("SENDGRID_API_KEY")),
+		logger: logger,
 	}
 }
 
@@ -31,19 +32,18 @@ func (c *Client) Send(n *Notification) error {
 	message, err := c.buildEmail(n)
 
 	if err != nil {
+		c.logger.WithFields(logrus.Fields{"meta": n.Meta}).WithError(err).Error("error buildEmail")
 		return err
 	}
 
 	response, serr := c.client.Send(message)
 
 	if serr != nil {
-		log.Println(err)
+		c.logger.WithFields(logrus.Fields{"meta": n.Meta}).WithError(err).Error("error Send")
 		return err
 	}
 
-	fmt.Println(response.StatusCode)
-	fmt.Println(response.Body)
-	fmt.Println(response.Headers)
+	c.logger.WithFields(logrus.Fields{"status_code": response.StatusCode, "meta": n.Meta}).Info("sent notification")
 	return nil
 }
 
@@ -72,6 +72,7 @@ func (c *Client) buildEmail(n *Notification) (*mail.SGMailV3, error) {
 	htmlContent, err := c.parseTemplate(template, n.Data)
 
 	if err != nil {
+		c.logger.WithFields(logrus.Fields{"meta": n.Meta}).WithError(err).Error("error parseTemplate")
 		return nil, err
 	}
 

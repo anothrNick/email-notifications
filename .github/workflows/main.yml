@@ -1,0 +1,26 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+      with:
+        fetch-depth: '0'
+    - name: Bump version and push tag
+      uses: anothrNick/github-tag-action@1.13.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      id: bump_version
+    - name: Build and publish Docker Image
+      run: |
+        make build
+        docker login docker.pkg.github.com -u anothrNick -p "${GITHUB_PACKAGE_REGISTRY_TOKEN}"
+        docker tag email-notifications_app:latest docker.pkg.github.com/anothrNick/email-notifications/email-notifications:$VERSION
+        docker push docker.pkg.github.com/machinable/email-notifications/email-notifications:$VERSION
+      env:
+        VERSION: ${{ steps.bump_version.outputs.new_tag }}
+        GITHUB_PACKAGE_REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
