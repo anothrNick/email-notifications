@@ -43,7 +43,7 @@ func (c *Client) Send(n *Notification) error {
 		return err
 	}
 
-	c.logger.WithFields(logrus.Fields{"status_code": response.StatusCode, "meta": n.Meta}).Info("sent notification")
+	c.logger.WithFields(logrus.Fields{"status_code": response.StatusCode, "body": response.Body, "meta": n.Meta}).Info("sent notification")
 	return nil
 }
 
